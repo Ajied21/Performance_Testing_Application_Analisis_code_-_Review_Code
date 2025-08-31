@@ -39,7 +39,7 @@ jobs:
       - name: Install deps
         run: npm ci
       - name: Run tests with coverage
-        run: npm run test:ci
+        run: node --experimental-vm-modules node_modules/.bin/jest --coverage --runInBand
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:

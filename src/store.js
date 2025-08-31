@@ -1,14 +1,21 @@
 // src/store.js
 let notes = [];
-let idCounter = 1;
+let nextId = 1;
 
-function listNotes() { return notes; }
-function getNote(id) { return notes.find(n => n.id === Number(id)) || null; }
+function listNotes() {
+  return notes;
+}
+
+function getNote(id) {
+  return notes.find(n => n.id === Number(id));
+}
+
 function createNote({ title, body }) {
-  const note = { id: idCounter++, title, body };
+  const note = { id: nextId++, title, body };
   notes.push(note);
   return note;
 }
+
 function updateNote(id, { title, body }) {
   const note = getNote(id);
   if (!note) return null;
@@ -16,6 +23,7 @@ function updateNote(id, { title, body }) {
   if (body) note.body = body;
   return note;
 }
+
 function deleteNote(id) {
   const index = notes.findIndex(n => n.id === Number(id));
   if (index === -1) return false;
@@ -23,7 +31,18 @@ function deleteNote(id) {
   return true;
 }
 
+// Fungsi resetStore untuk testing
+function resetStore() {
+  notes = [];
+  nextId = 1;
+}
+
 export default {
-  listNotes, getNote, createNote, updateNote, deleteNote
+  listNotes,
+  getNote,
+  createNote,
+  updateNote,
+  deleteNote,
+  resetStore,  // <-- tambahkan ini
 };
 
