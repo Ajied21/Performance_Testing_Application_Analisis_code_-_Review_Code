@@ -15,16 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
       - name: Install deps
         run: npm ci
-
       - name: Run ESLint
         run: npm run lint
 
@@ -34,19 +31,15 @@ jobs:
     needs: lint
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
-
       - name: Install deps
         run: npm ci
-
       - name: Run tests with coverage
         run: npm run test:ci
-
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:
@@ -59,7 +52,6 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v4
-
       - name: SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@v5
         env:
@@ -80,13 +72,16 @@ jobs:
         run: npm ci
       - name: Start app in background
         run: |
-          nohup npm start > app.log 2>&1 &
+          nohup PORT=3000 npm start > app.log 2>&1 &
           npx wait-on http://localhost:3000
       - name: Install k6
         run: |
           curl -s https://dl.k6.io/key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/k6-archive-keyring.gpg
           echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
           sudo apt-get update && sudo apt-get install -y k6
-      - name: Run smoke test
+      - name: Run k6 Smoke Test
         run: k6 run k6/smoke-test.js
+      - name: Show app log if failure
+        if: failure()
+        run: cat app.log
 
